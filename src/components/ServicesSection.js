@@ -2,8 +2,44 @@
 
 import { useState } from "react";
 import { INITIAL_SERVICES } from "../data/initialData";
+import { SPECIALISTS } from "../lib/constants";
 import FallbackImage from "./FallbackImage";
 import { Sparkles, Clock, Check, Eye, Hand, Flame, Sun, Scissors, Smile, Shield, Flower2, X, ArrowRight, Calendar } from "lucide-react";
+
+// Mini avatar circular con foto (si existe) y fallback a la inicial del nombre.
+// Se usa tanto en el chip de cada card como en el cartel de bienvenida del sector.
+function SpecialistAvatar({ specialist, size = 24 }) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: "50%",
+        flexShrink: 0,
+        background: "var(--gold-gradient)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden"
+      }}
+    >
+      <FallbackImage src={specialist.photo} alt={specialist.name} fill sizes={`${size}px`} style={{ objectFit: "cover" }} />
+      <span className="font-serif" style={{ position: "absolute", fontSize: `${size * 0.42}px`, fontWeight: "700", color: "#0b0c10" }}>
+        {specialist.name.charAt(0)}
+      </span>
+    </div>
+  );
+}
+
+// Quién recibe a las clientas en cada sector: Eyes = Aye sola, Body combina a
+// Emi (depilación/bronceado) y Keila (capilar) porque comparten el mismo tab,
+// Hands es un equipo sin dueña asignada.
+const SECTOR_HOSTS = {
+  eyes: { specialists: [SPECIALISTS.aye], text: "Tu sesión de pestañas y cejas, en manos de Aye." },
+  body: { specialists: [SPECIALISTS.emi, SPECIALISTS.keila], text: "Depilación definitiva y bronceado con Emi, tratamientos capilares con Keila." },
+  hands: { specialists: [SPECIALISTS.hands], text: "Nails, kapping y pedicuría a cargo de nuestro equipo Biuty Hands." }
+};
 
 export default function ServicesSection({ onSelectServiceToBook }) {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -15,6 +51,8 @@ export default function ServicesSection({ onSelectServiceToBook }) {
     { id: "hands", label: "Nails (Manos & Pies)", Icon: Hand },
     { id: "body", label: "Depilación, Bronceado & Capilar", Icon: Flower2 }
   ];
+
+  const sectorHost = SECTOR_HOSTS[activeCategory];
 
   const filteredServices = activeCategory === "all"
     ? INITIAL_SERVICES
@@ -73,6 +111,36 @@ export default function ServicesSection({ onSelectServiceToBook }) {
             </button>
           ))}
         </div>
+
+        {/* Cartel de bienvenida: quién te recibe en el sector elegido */}
+        {sectorHost && (
+          <div
+            className="gold-card"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              padding: "18px 24px",
+              maxWidth: "780px",
+              margin: "0 auto 36px auto",
+              background: "var(--gold-gradient-soft)"
+            }}
+          >
+            <div style={{ display: "flex", flexShrink: 0 }}>
+              {sectorHost.specialists.map((sp, idx) => (
+                <div key={sp.name} style={{ marginLeft: idx > 0 ? "-14px" : 0, border: "2px solid #0b0c10", borderRadius: "50%" }}>
+                  <SpecialistAvatar specialist={sp} size={52} />
+                </div>
+              ))}
+            </div>
+            <div>
+              <div style={{ fontSize: "0.72rem", color: "var(--gold-light)", textTransform: "uppercase", fontWeight: "700", letterSpacing: "0.5px", marginBottom: "3px" }}>
+                {sectorHost.specialists.map(sp => sp.name).join(" & ")} te da{sectorHost.specialists.length > 1 ? "n" : ""} la bienvenida
+              </div>
+              <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", margin: 0 }}>{sectorHost.text}</p>
+            </div>
+          </div>
+        )}
 
         {/* Services Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "28px" }}>
@@ -155,9 +223,20 @@ export default function ServicesSection({ onSelectServiceToBook }) {
                   </div>
                 </div>
 
-                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.5", marginBottom: "20px" }}>
+                <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.5", marginBottom: "14px" }}>
                   {service.description}
                 </p>
+
+                {/* Especialista exacta de este tratamiento (nunca mezcla Emi con Keila
+                    aunque las dos estén en el sector Body) */}
+                {SPECIALISTS[service.specialistKey] && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
+                    <SpecialistAvatar specialist={SPECIALISTS[service.specialistKey]} size={22} />
+                    <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                      Con <strong style={{ color: "var(--gold-light)" }}>{SPECIALISTS[service.specialistKey].name}</strong>
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Price & Action Footer */}
