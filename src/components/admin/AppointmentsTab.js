@@ -138,7 +138,7 @@ export default function AppointmentsTab({
         </select>
       </div>
 
-      <div style={{ overflowX: "auto" }}>
+      <div className="admin-table-wrap" style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem", textAlign: "left" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid var(--gold-border)", color: "var(--gold-light)" }}>
@@ -253,6 +253,105 @@ export default function AppointmentsTab({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Versión en tarjetas para celular: misma info y acciones que la tabla,
+          pero apiladas en vertical así entra todo sin cortarse. */}
+      <div className="admin-cards" style={{ flexDirection: "column", gap: "14px" }}>
+        {filteredAppointments.length === 0 ? (
+          <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.9rem" }}>
+            No se encontraron turnos con los filtros actuales.
+          </div>
+        ) : (
+          filteredAppointments.map((app) => {
+            const statusStyle = STATUS_STYLES[app.status] || STATUS_STYLES.Pendiente;
+            return (
+              <div key={app.id} className="gold-card" style={{ padding: "16px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px", marginBottom: "10px" }}>
+                  <div>
+                    <div style={{ fontWeight: "700", color: "var(--gold-light)", fontSize: "0.85rem", marginBottom: "4px" }}>#{app.id}</div>
+                    <div style={{ fontWeight: "600", color: "#fff", fontSize: "0.95rem" }}>{app.serviceName}</div>
+                    <span className="badge-gold" style={{ fontSize: "0.68rem", marginTop: "4px" }}>{app.sectorName}</span>
+                  </div>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ fontWeight: "700", color: "var(--gold-primary)" }}>${app.price.toLocaleString("es-AR")}</div>
+                    <div style={{ fontSize: "0.78rem", color: "#fff", marginTop: "4px" }}>{app.date}</div>
+                    <div style={{ fontSize: "0.78rem", color: "var(--gold-light)" }}>{app.time} hs</div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: "0.85rem", color: "#fff", marginBottom: "4px" }}>{app.clientName}</div>
+                <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "12px" }}>{app.clientPhone}</div>
+
+                <select
+                  value={app.status}
+                  onChange={(e) => onUpdateAppointmentStatus(app.id, e.target.value)}
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "none", background: statusStyle.bg, color: statusStyle.color, fontWeight: "700", fontSize: "0.85rem", marginBottom: "12px" }}
+                >
+                  <option value="Confirmado">Confirmado</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Seña Pendiente">Seña Pendiente</option>
+                  <option value="Completado">Completado</option>
+                  <option value="Cancelado">Cancelado</option>
+                  <option value="No Asistió">No Asistió</option>
+                </select>
+
+                <div style={{ display: "flex", gap: "8px", justifyContent: "center", paddingTop: "10px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                  <a
+                    href={getWhatsAppLink(app.clientPhone, app.clientName, app.date, app.time)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-icon"
+                    style={{ width: "36px", height: "36px", color: "#25D366" }}
+                    title="Recordatorio por WhatsApp"
+                  >
+                    <Phone size={15} />
+                  </a>
+
+                  {app.status === "Seña Pendiente" && (
+                    <button
+                      onClick={() => onApproveDeposit(app.id)}
+                      className="btn-icon"
+                      style={{ width: "36px", height: "36px", color: "var(--accent-green)" }}
+                      title="Aprobar seña recibida"
+                    >
+                      <BadgeCheck size={16} />
+                    </button>
+                  )}
+
+                  {app.status === "No Asistió" ? (
+                    <button
+                      onClick={() => onMarkNoShow(app.id, false)}
+                      className="btn-icon"
+                      style={{ width: "36px", height: "36px" }}
+                      title="Deshacer no-show"
+                    >
+                      <RotateCcw size={16} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onMarkNoShow(app.id, true)}
+                      className="btn-icon"
+                      style={{ width: "36px", height: "36px" }}
+                      title="Marcar que no se presentó"
+                    >
+                      <UserX size={16} />
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => onDeleteAppointment(app.id)}
+                    className="btn-icon"
+                    style={{ width: "36px", height: "36px", color: "var(--accent-red)" }}
+                    title="Eliminar Turno"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
 
       {/* Manual Appointment Modal */}

@@ -52,7 +52,7 @@ export default function AdminDashboard({
   return (
     <div className="modal-overlay" onClick={onClose} style={{ zIndex: 1100 }}>
       <div
-        className="gold-card"
+        className="gold-card admin-panel"
         onClick={(e) => e.stopPropagation()}
         style={{
           maxWidth: "1180px",
@@ -68,21 +68,23 @@ export default function AdminDashboard({
       >
         {/* Admin Header */}
         <div
+          className="admin-panel-header"
           style={{
             padding: "24px 30px",
             borderBottom: "1px solid rgba(212, 175, 55, 0.2)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            gap: "12px",
             background: "linear-gradient(90deg, rgba(26,29,40,1) 0%, rgba(13,15,23,1) 100%)"
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ padding: "8px", borderRadius: "8px", background: "var(--gold-gradient)", color: "#000" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+            <div style={{ padding: "8px", borderRadius: "8px", background: "var(--gold-gradient)", color: "#000", flexShrink: 0 }}>
               <LayoutDashboard size={22} />
             </div>
-            <div>
-              <h2 className="font-serif gold-text" style={{ fontSize: "1.8rem", lineHeight: "1.1" }}>
+            <div style={{ minWidth: 0 }}>
+              <h2 className="font-serif gold-text admin-panel-title" style={{ fontSize: "1.8rem", lineHeight: "1.15" }}>
                 Panel de Control & Fidelización
               </h2>
               <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
@@ -91,13 +93,13 @@ export default function AdminDashboard({
             </div>
           </div>
 
-          <button onClick={onClose} className="btn-icon" style={{ width: "38px", height: "38px" }}>
+          <button onClick={onClose} className="btn-icon" style={{ width: "38px", height: "38px", flexShrink: 0 }}>
             <X size={20} />
           </button>
         </div>
 
         {/* Admin Navigation Tabs */}
-        <div style={{ display: "flex", gap: "10px", padding: "16px 30px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.2)", flexWrap: "wrap" }}>
+        <div className="admin-panel-tabs" style={{ display: "flex", gap: "10px", padding: "16px 30px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.2)", flexWrap: "wrap" }}>
           {TABS.map(({ id, label, Icon }) => {
             let badgeCount = 0;
             if (id === "appointments") badgeCount = pendingDepositCount;
@@ -122,7 +124,7 @@ export default function AdminDashboard({
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: "30px", overflowY: "auto", flex: 1 }}>
+        <div className="admin-panel-body" style={{ padding: "30px", overflowY: "auto", flex: 1 }}>
           {activeTab === "metrics" && <MetricsTab appointments={appointments} clients={clients} />}
 
           {activeTab === "appointments" && (
@@ -160,6 +162,24 @@ export default function AdminDashboard({
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 640px) {
+          .admin-panel-header {
+            padding: 16px !important;
+          }
+          .admin-panel-title {
+            font-size: 1.3rem !important;
+          }
+          .admin-panel-tabs {
+            padding: 12px 16px !important;
+            gap: 8px !important;
+          }
+          .admin-panel-body {
+            padding: 16px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

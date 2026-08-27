@@ -267,3 +267,33 @@ body::before {
   }
 }
 
+/* Paneles tipo modal (Admin, carrito, detalle de servicio, turno manual):
+   en celular les sacamos aire al overlay y les damos casi toda la pantalla,
+   así el contenido de adentro tiene más ancho real para acomodarse. */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal-overlay .gold-card {
+    max-height: 94vh !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+  }
+}
+
+/* Tablas de administración: en desktop/tablet se ven como tabla con scroll
+   horizontal propio; en celular se ocultan y en su lugar se muestra la
+   versión en tarjetas (.admin-cards) que sí entra prolija en la pantalla. */
+.admin-cards {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .admin-table-wrap {
+    display: none;
+  }
+  .admin-cards {
+    display: flex;
+  }
+}
+

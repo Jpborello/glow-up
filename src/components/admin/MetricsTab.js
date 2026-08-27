@@ -146,7 +146,7 @@ export default function MetricsTab({ appointments, clients }) {
         <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "20px" }}>
           Ideal para sorteos o beneficios especiales de fin de año.
         </p>
-        <div style={{ overflowX: "auto" }}>
+        <div className="admin-table-wrap" style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem", textAlign: "left" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--gold-border)", color: "var(--gold-light)" }}>
@@ -167,6 +167,22 @@ export default function MetricsTab({ appointments, clients }) {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Versión en tarjetas para celular */}
+        <div className="admin-cards" style={{ flexDirection: "column", gap: "10px" }}>
+          {ranking.map((c, idx) => (
+            <div key={c.id} className="gold-card" style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span style={{ fontWeight: "700", color: "var(--gold-primary)", fontSize: "0.9rem" }}>#{idx + 1}</span>
+                <div>
+                  <div style={{ color: "#fff", fontWeight: "600", fontSize: "0.88rem" }}>{c.name}</div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "0.75rem" }}>{c.visitsCount} visitas</div>
+                </div>
+              </div>
+              <div style={{ color: "var(--gold-light)", fontWeight: "700", fontSize: "0.9rem" }}>${c.totalSpent.toLocaleString("es-AR")}</div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
